@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup as soup
 import re
 
+
 def extract_email():
     """Extracts emails from HTML file"""
     while True:
@@ -11,13 +12,16 @@ def extract_email():
                 break
         except FileNotFoundError:
             print('File not found')
-
+            
     tags = document.find_all('a')
 
     emails = []
     for email in tags:
-        email_regex = re.findall("[a-z]+@[a-z]+.[a-z]+", email.string)
-        emails += email_regex
+        href = email.get('href', "")
+        if href.startswith('mailto:'):
+            email_regex = re.findall(r'(?<=mailto:)\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', href, re.DOTALL)
+            if email_regex:
+                emails += email_regex
 
     return emails
 
