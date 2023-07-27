@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup as soup
 import re
+import csv
 
 
 def extract_email():
@@ -25,5 +26,11 @@ def extract_email():
 
     return emails
 
-
-
+def convert_to_csv(data_list):
+    """Takes list of items and converts to CSV"""
+    choice = input("What is being extracted: ")
+    with open (f'{choice}_extraction.csv', 'w', newline='') as file:
+        email_write = csv.writer(file)
+        for item in data_list:
+            email_write.writerow([item])
+    file.close()
