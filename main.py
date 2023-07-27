@@ -1,4 +1,4 @@
-from scraper import extract_email
+from scrape import extract_email
 
 emails = extract_email()
 
