@@ -3,8 +3,9 @@ import pytest
 sys.path.append("../scraper")
 import scrape as sc
 
+
 def test_email_extraction_to_csv(monkeypatch):
-    """Test that checks if the function extract_email()
+    """Checks if the function extract_email()
         extracts emails correctly from HTML document"""
     monkeypatch.setattr('builtins.input', lambda _: "html_tests")
 
@@ -13,3 +14,8 @@ def test_email_extraction_to_csv(monkeypatch):
 
     result = sc.extract_email()
     assert result == expected_output
+
+def test_convert_to_csv():
+    """Checks if function convert_to_csv() creates a
+        .csv file"""
+    
