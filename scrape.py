@@ -33,4 +33,4 @@ def convert_to_csv(data_list):
         email_write = csv.writer(file)
         for item in data_list:
             email_write.writerow([item])
-    file.close()
+    
