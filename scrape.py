@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup as soup
 import re
+import requests
 import csv
 
 
@@ -25,6 +26,13 @@ def extract_email():
                 emails += email_regex
 
     return emails
+
+def extract_prices(link):
+    """Extracts prices of items from websites"""
+    site_prices = requests.get(link)
+    document = soup(site_prices.text, "html.parser")
+    prices = document.find_all("£")
+
 
 def convert_to_csv(data_list):
     """Takes list of items and converts to CSV"""

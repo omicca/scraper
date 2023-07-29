@@ -1,7 +1,3 @@
-from scrape import extract_email, convert_to_csv
+from scrape import extract_email, convert_to_csv, extract_prices
 
-emails = extract_email()
-
-print(emails)
-
-convert_to_csv(emails)
+print(extract_prices("https://www.pricerunner.com/pl/1-3202448048/Mobile-Phones/Apple-iPhone-14-Pro-Max-128GB-Compare-Prices"))
