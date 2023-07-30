@@ -27,11 +27,21 @@ def extract_email():
 
     return emails
 
-def extract_prices(link):
-    """Extracts prices of items from websites"""
-    site_prices = requests.get(link)
+def extract_prices(url):
+    """Extracts recent prices from"""
+    site_prices = requests.get(url)
     document = soup(site_prices.text, "html.parser")
-    prices = document.find_all("£")
+    
+    final_title = []
+    for titl in document.find_all('h3', {"class": "pr-1786rw9"}):
+        title = titl.parent
+        final_title += title.find('h3')
+
+    final_price = []
+    for pric in document.find_all('span', class_='pr-1859nm3'):
+        final_price += pric
+
+    return final_title, final_price
 
 
 def convert_to_csv(data_list):
