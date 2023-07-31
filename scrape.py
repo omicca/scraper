@@ -46,8 +46,16 @@ def extract_prices(url):
     i = 0
     for title, price in zip(final_title, final_price):
         final[f'{i}'] = {}
-        final[f'{i}'][title] = price
+        final[f'{i}']['name'] = title
+        final[f'{i}']['price'] = price
         i += 1
+
+    for k, v in final.items():
+        print(f'{k}, {v}')
+        if '\xa0' in v['price']:
+            v['price'] = v['price'].replace("\xa0", "")
+        
+    print(final)
 
     return final
 
