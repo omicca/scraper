@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup as soup
 import re
 import requests
 import csv
+import json
 
 
 def extract_email():
@@ -35,8 +36,8 @@ def extract_prices(url):
     
     final_title = []
     for titl in document.find_all('h3', {"class": "pr-1786rw9"}):
-        title = titl.parent
-        final_title += title.find('h3')
+        title = titl.decode_contents()
+        final_title.append(title)
 
     final_price = []
     for pric in document.find_all('span', class_='pr-1859nm3'):
@@ -51,11 +52,8 @@ def extract_prices(url):
         i += 1
 
     for k, v in final.items():
-        print(f'{k}, {v}')
-        if '\xa0' in v['price']:
+        if '\xa0' in v['price'] or '\xa0' in v['name']:
             v['price'] = v['price'].replace("\xa0", "")
-        
-    print(final)
 
     return final
 
@@ -67,4 +65,8 @@ def convert_to_csv(data_list):
         email_write = csv.writer(file)
         for item in data_list:
             email_write.writerow([item])
-    
+
+def convert_to_json(data_list):
+    """Takes a dictionary and converts it to JSON"""
+    with open("prices.json", "w") as f:
+        json.dump(data_list, f, indent=4)
