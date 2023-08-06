@@ -35,13 +35,13 @@ def extract_prices(url):
     document = soup(site_prices.text, "html.parser")
     
     final_title = []
-    for titl in document.find_all('h3', {"class": "pr-1786rw9"}):
-        title = titl.decode_contents()
+    for title in document.find_all('h3', {"class": "pr-1786rw9"}):
+        title = title.decode_contents()
         final_title.append(title)
 
     final_price = []
-    for pric in document.find_all('span', class_='pr-1859nm3'):
-        final_price += pric
+    for price in document.find_all('span', class_='pr-1859nm3'):
+        final_price += price
 
     final = {}
     i = 0
@@ -52,7 +52,7 @@ def extract_prices(url):
         i += 1
 
     for k, v in final.items():
-        if '\xa0' in v['price'] or '\xa0' in v['name']:
+        if '\xa0' in v['price']:
             v['price'] = v['price'].replace("\xa0", "")
 
     return final
@@ -69,4 +69,4 @@ def convert_to_csv(data_list):
 def convert_to_json(data_list):
     """Takes a dictionary and converts it to JSON"""
     with open("prices.json", "w") as f:
-        json.dump(data_list, f, indent=4)
+        json.dump(data_list, f, indent=4, ensure_ascii=False)
