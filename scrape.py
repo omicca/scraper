@@ -3,6 +3,8 @@ import re
 import requests
 import csv
 import json
+import time
+import logging
 
 
 def extract_email():
@@ -56,6 +58,25 @@ def extract_prices(url):
             v['price'] = v['price'].replace("\xa0", "")
 
     return final
+
+
+DOMAIN_URLS = {
+    "com": "https://www.pricerunner.com/deals",
+    "dk": "https://www.pricerunner.cdk/deals"
+}
+WATCH_INTERVAL = 300
+def price_watcher(domain):
+    """Fetces deals every 5 minutes, updating .json
+        if new deals or price"""
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(" price_watcher")
+    while True:
+        logger.info(f' Watching prices for .{domain}')
+        if domain in DOMAIN_URLS:
+            url = DOMAIN_URLS[domain]
+            price_list = extract_prices(url)
+
+        time.sleep(1)
 
 
 def convert_to_csv(data_list):

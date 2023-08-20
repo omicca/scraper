@@ -1,5 +1,6 @@
-from scrape import extract_email, convert_to_csv, extract_prices, convert_to_json
+from scrape import *
 
-prices = extract_prices('https://www.pricerunner.com/deals')
+price_list = extract_prices("https://www.pricerunner.com/deals")
 
-convert_to_json(prices)
+convert_to_json(price_list)
+price_watcher("com")
