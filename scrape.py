@@ -10,7 +10,8 @@ DOMAIN_URLS = {
     "com": "https://www.pricerunner.com/deals",
     "dk": "https://www.pricerunner.cdk/deals"
 }
-WATCH_INTERVAL = 300
+WATCH_INTERVAL = 60
+
 
 def extract_email():
     """Extracts emails from HTML file"""
@@ -35,6 +36,7 @@ def extract_email():
                 emails += email_regex
 
     return emails
+
 
 def extract_prices(url):
     """Extracts prices of deals from pricerunner"""
@@ -64,22 +66,36 @@ def extract_prices(url):
 
     return final
 
+
 def price_watcher(domain):
     """Fetches deals every 5 minutes, updating .json
         if new deals or price"""
+
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(" price_watcher")
     while True:
         logger.info(f' Watching prices for .{domain}')
+        price_list = {}
         if domain in DOMAIN_URLS:
             url = DOMAIN_URLS[domain]
             price_list = extract_prices(url)
 
         original_list = convert_to_dict()
 
-        for i in original_list:
-            for j in price_list:
-                if original_list[str(i)]["name"] == price_list[str(j)]["name"]:
+        for item in original_list:
+            original_name = item["name"]
+            for new_price in price_list.values():
+                if original_name == new_price["name"]:
+                    original_price = int(item["price"])
+                    new_price = int(new_price["price"])
+
+                    if original_price > new_price:
+                        logger.info(f"PRICE UPDATE: {original_name} price has changed "
+                                    f"from {original_price} to {new_price}!")
+                        if domain == "com":
+                            item["price"] = f"£{str(new_price)}"
+                        else:
+                            item["price"] = f"{str(new_price)}DKK"
 
         time.sleep(WATCH_INTERVAL)
 
@@ -92,10 +108,12 @@ def convert_to_csv(data_list):
         for item in data_list:
             email_write.writerow([item])
 
+
 def convert_to_json(data_list):
     """Takes a dictionary and converts it to JSON"""
     with open("prices.json", "w") as f:
         json.dump(data_list, f, indent=4, ensure_ascii=False)
+
 
 def convert_to_dict():
     """Converts a .json file to dictionary"""
