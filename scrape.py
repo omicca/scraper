@@ -82,20 +82,21 @@ def price_watcher(domain):
 
         original_list = convert_to_dict()
 
-        for item in original_list:
-            original_name = item["name"]
-            for new_price in price_list.values():
-                if original_name == new_price["name"]:
-                    original_price = int(item["price"])
-                    new_price = int(new_price["price"])
+        i = 1
+        for item_key, item_values in original_list.items():
+            original_name = item_values['name']
+            for new_item in price_list.values():
+                if original_name == new_item['name']:
+                    original_price = item_values['price']
+                    new_price = new_item['price']
 
                     if original_price > new_price:
                         logger.info(f"PRICE UPDATE: {original_name} price has changed "
                                     f"from {original_price} to {new_price}!")
                         if domain == "com":
-                            item["price"] = f"£{str(new_price)}"
+                            item_values["price"] = f"£{str(new_item)}"
                         else:
-                            item["price"] = f"{str(new_price)}DKK"
+                            item_values["price"] = f"{str(new_item)}DKK"
 
         time.sleep(WATCH_INTERVAL)
 
