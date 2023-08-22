@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup as soup
+from bs4 import BeautifulSoup as Soup
 import re
 import requests
 import csv
@@ -19,7 +19,7 @@ def extract_email():
         file = input("Enter html filename: ")
         try:
             with open("html/" + file + ".html", "r") as f:
-                document = soup(f, "html.parser")
+                document = Soup(f, "html.parser")
                 break
         except FileNotFoundError:
             print('File not found')
@@ -39,9 +39,9 @@ def extract_email():
 
 
 def extract_prices(url):
-    """Extracts prices of deals from pricerunner"""
+    """Extracts name and price of deals from Pricerunner"""
     site_prices = requests.get(url)
-    document = soup(site_prices.text, "html.parser")
+    document = Soup(site_prices.text, "html.parser")
     
     final_title = []
     for title in document.find_all('h3', {"class": "pr-1786rw9"}):
@@ -72,9 +72,9 @@ def price_watcher(domain):
         if new deals or price"""
 
     logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(" price_watcher")
+    logger = logging.getLogger(":")
     while True:
-        logger.info(f' Watching prices for .{domain}')
+        logger.info(f' Watching for .{domain}')
         price_list = {}
         if domain in DOMAIN_URLS:
             url = DOMAIN_URLS[domain]
@@ -82,21 +82,24 @@ def price_watcher(domain):
 
         original_list = convert_to_dict()
 
-        i = 1
         for item_key, item_values in original_list.items():
             original_name = item_values['name']
             for new_item in price_list.values():
                 if original_name == new_item['name']:
-                    original_price = item_values['price']
+                    original_price = str(item_values['price'])
                     new_price = new_item['price']
+                    original_price = float(original_price.replace("£", ""))
+                    new_price = float(new_price.replace("£", ""))
 
                     if original_price > new_price:
                         logger.info(f"PRICE UPDATE: {original_name} price has changed "
-                                    f"from {original_price} to {new_price}!")
+                                    f"from {original_price} to {new_price}")
                         if domain == "com":
-                            item_values["price"] = f"£{str(new_item)}"
+                            item_values["price"] = f"{str(new_item['price'])}"
+                            convert_to_json(original_list)
                         else:
-                            item_values["price"] = f"{str(new_item)}DKK"
+                            item_values["price"] = f"{str(new_item['price'])}DKK"
+                            convert_to_json(original_list)
 
         time.sleep(WATCH_INTERVAL)
 
@@ -104,14 +107,14 @@ def price_watcher(domain):
 def convert_to_csv(data_list):
     """Takes list of items and converts to CSV"""
     choice = input("What is being extracted: ")
-    with open (f'{choice}_extraction.csv', 'w', newline='') as file:
+    with open(f'{choice}_extraction.csv', 'w', newline='') as file:
         email_write = csv.writer(file)
         for item in data_list:
             email_write.writerow([item])
 
 
 def convert_to_json(data_list):
-    """Takes a dictionary and converts it to JSON"""
+    """Takes a dictionary or list and converts it to JSON"""
     with open("prices.json", "w") as f:
         json.dump(data_list, f, indent=4, ensure_ascii=False)
 

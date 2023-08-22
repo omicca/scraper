@@ -1,7 +1,7 @@
+import scrape as sc
 import sys
 import pytest
 sys.path.append("../scraper")
-import scrape as sc
 
 
 def test_email_extraction_to_csv(monkeypatch):
@@ -14,6 +14,7 @@ def test_email_extraction_to_csv(monkeypatch):
 
     result = sc.extract_email()
     assert result == expected_output
+
 
 def test_convert_to_csv():
     """Checks if function convert_to_csv() creates a
