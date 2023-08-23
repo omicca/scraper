@@ -67,9 +67,25 @@ def extract_prices(url):
     return final
 
 
+def add_item(item):
+    """Adds a new item to prices.json"""
+
+
+def price_update(old_price, new_price, domain):
+    new_price_str = str(new_price) if domain == "com" else f"{new_price}DKK"
+    old_price["price"] = new_price_str
+
+
+def clean_price(price, domain):
+    if domain == "com":
+        return float(price.replace("£", ""))
+    else:
+        return float(price.replace("DKK", ""))
+
+
 def price_watcher(domain):
-    """Fetches deals every 5 minutes, updating .json
-        if new deals or price"""
+    """Fetches deals every minute updating .json
+        if new price"""
 
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(":")
@@ -87,25 +103,16 @@ def price_watcher(domain):
             original_name = item_values['name']
             for new_item_key, new_item in price_list.items():
                 if original_name == new_item['name']:
-                    original_price = str(item_values['price'])
-                    new_price = new_item['price']
-                    original_price = float(original_price.replace("£", ""))
-                    new_price = float(new_price.replace("£", ""))
+                    original_price = clean_price(item_values['price'], domain)
+                    new_price = clean_price(new_item['price'], domain)
 
                     if original_price > new_price:
-                        logger.info(f"PRICE UPDATE: {original_name} price has changed "
-                                    f"from {original_price} to {new_price}")
-                        if domain == "com":
-                            item_values["price"] = f"{str(new_item['price'])}"
-                            convert_to_json(original_list)
-                        else:
-                            item_values["price"] = f"{str(new_item['price'])}DKK"
-                            convert_to_json(original_list)
+                        logger.info(f"PRICE CHANGE: {original_name} changed from "
+                                    f"{original_price} to {new_price}")
+                        price_update(original_price, new_price, domain)
                 else:
-                    last_index = int(list(original_list)[-1])
-                    last_index += 1
+                    continue
 
-        final_list[f'{last_index}'] = new_item
         convert_to_json(final_list)
 
         time.sleep(WATCH_INTERVAL)
