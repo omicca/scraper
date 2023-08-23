@@ -82,9 +82,10 @@ def price_watcher(domain):
 
         original_list = convert_to_dict()
 
+        final_list = original_list
         for item_key, item_values in original_list.items():
             original_name = item_values['name']
-            for new_item in price_list.values():
+            for new_item_key, new_item in price_list.items():
                 if original_name == new_item['name']:
                     original_price = str(item_values['price'])
                     new_price = new_item['price']
@@ -100,6 +101,12 @@ def price_watcher(domain):
                         else:
                             item_values["price"] = f"{str(new_item['price'])}DKK"
                             convert_to_json(original_list)
+                else:
+                    last_index = int(list(original_list)[-1])
+                    last_index += 1
+
+        final_list[f'{last_index}'] = new_item
+        convert_to_json(final_list)
 
         time.sleep(WATCH_INTERVAL)
 
