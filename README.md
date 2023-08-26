@@ -6,3 +6,4 @@ finished:<br />
 
 todo:<br />
 *price watcher
+*item buyer
